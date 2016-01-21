@@ -29,6 +29,9 @@ public class ESPUtil extends JFrame implements ActionListener{
 	private static JButton setAP = new JButton("Set AP");
 	private static JButton setBoth = new JButton("Set Both");
 	
+	private static JButton changeName = new JButton("Change Name");
+	private static JButton changeBaud = new JButton("Change Baud Rate");	//This changes the baud rate of the ESP trhough software, not the driver's
+	
 	private static JButton checkAP = new JButton("Check AP");
 	private static JButton listAP = new JButton("List APs");
 	private static JButton version = new JButton("Check Version");
@@ -36,7 +39,10 @@ public class ESPUtil extends JFrame implements ActionListener{
 	
 	private static Checkbox mux = new Checkbox("MUX");
 	private static JTextField ip = new JTextField("IP Address");
+	private static JTextField newName = new JTextField("New AP Name");
+	private static JTextField newBaud = new JTextField("");
 	private static JTextArea message = new JTextArea("Enter Message here");
+	
 	
     JTextArea txArea;
     JTextArea mixArea;
@@ -47,14 +53,14 @@ public class ESPUtil extends JFrame implements ActionListener{
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
 	Writer myWriter;
-	
+	Dimension myDim = new Dimension();
 	ESPUtil(JTextArea txArea, JTextArea mixArea)
 	{
+		myDim.setSize((int) screenSize.getWidth()/4, (int) screenSize.getHeight()/4);
 		this.txArea = txArea;
 		this.mixArea = mixArea;
 		myWriter = new Writer(txArea, mixArea);
 		this.setLayout(layout);
-		this.setSize((int) screenSize.getWidth()/4,(int) screenSize.getHeight()/4);
 		this.setVisible(true);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 0.5;
@@ -67,6 +73,18 @@ public class ESPUtil extends JFrame implements ActionListener{
 		this.add(setAP, c);
 		c.gridx++;
 		this.add(setBoth, c);
+		
+		c.gridx = 0;
+		c.gridy++;
+		this.add(changeName, c);
+		c.gridx++; 
+		this.add(newName,c);
+		
+		c.gridx = 0;
+		c.gridy++;
+		this.add(changeBaud, c);
+		c.gridx++;
+		this.add(newBaud, c);
 		
 		c.gridx = 0;
 		c.gridy++;
@@ -107,6 +125,8 @@ public class ESPUtil extends JFrame implements ActionListener{
 		setSTA.addActionListener(this);
 		setAP.addActionListener(this);
 		setBoth.addActionListener(this);
+		changeName.addActionListener(this);
+		changeBaud.addActionListener(this);
 		cipMux.addActionListener(this);
 		checkIP.addActionListener(this);
 		startConnection.addActionListener(this);	
@@ -114,8 +134,10 @@ public class ESPUtil extends JFrame implements ActionListener{
 		checkAP.addActionListener(this);
 		listAP.addActionListener(this);
 		version.addActionListener(this);
-		
-		
+		this.pack();
+		myDim.setSize(this.getSize());
+		myDim.width *= 2;
+		this.setSize(myDim);
 	}
 	
 
@@ -137,6 +159,14 @@ public class ESPUtil extends JFrame implements ActionListener{
 		if(e.getSource() == setBoth)
 		{
 			finalMessage = "AT+CWMODE=3\r\n";
+		}
+		if(e.getSource() == changeName)
+		{
+			finalMessage = "AT+CWSAP=\""+newName.getText()+"\",\"\",11,0\r\n";
+		}
+		if(e.getSource()== changeBaud)
+		{
+			finalMessage = "AT+CIOBAUD="+newBaud.getText()+"\r\n";
 		}
 		if(e.getSource() == listAP)
 		{
